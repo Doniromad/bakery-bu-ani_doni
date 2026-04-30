@@ -1,127 +1,117 @@
 @extends('layouts.pelanggan')
 
-@section('title', $produk->nama_produk . ' - Toko Roti Ibu Ani')
+@section('title', $produk->nama_produk . ' - Bakery Bu Ani')
 
 @section('content')
 <div class="container py-5">
-    {{-- Breadcrumb: Biar navigasi makin pro --}}
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Beranda</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('home') }}#produk" class="text-decoration-none">Produk</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ $produk->nama_produk }}</li>
-        </ol>
-    </nav>
-
-    <div class="row g-5">
-        {{-- SISI KIRI: Gambar Produk --}}
-        <div class="col-lg-5">
-            <div class="product-image-wrapper p-2 bg-white shadow-sm rounded-4 overflow-hidden">
-                @if($produk->gambar)
-                    <img src="{{ asset('images/produk/'.$produk->gambar) }}" 
-                         class="img-fluid rounded-4 w-100" 
-                         alt="{{ $produk->nama_produk }}"
-                         style="object-fit: cover; min-height: 400px;">
-                @else
-                    <div class="bg-light rounded-4 d-flex flex-column align-items-center justify-content-center" 
-                         style="min-height: 400px; color: #cbd5e1;">
-                        <i class="bi bi-image fs-1 mb-2"></i>
-                        <span class="small fw-bold uppercase">Gambar Belum Tersedia</span>
+    <div class="row justify-content-center g-4 g-lg-5">
+        
+        {{-- SISI KIRI: Gambar Produk (Dibuat Lebih Kecil & Terkontrol) --}}
+        <div class="col-md-5 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="position-relative" style="aspect-ratio: 1/1;">
+                    @if($produk->gambar)
+                        <img src="{{ asset('images/produk/'.$produk->gambar) }}" 
+                             class="w-100 h-100" 
+                             style="object-fit: cover;"
+                             alt="{{ $produk->nama_produk }}">
+                    @else
+                        <div class="w-100 h-100 bg-light d-flex flex-column align-items-center justify-content-center text-muted">
+                            <i class="bi bi-image fs-1 mb-2"></i>
+                            <span class="small fw-bold">NO IMAGE</span>
+                        </div>
+                    @endif
+                    
+                    {{-- Badge Kategori Melayang --}}
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <span class="badge bg-white text-primary rounded-pill px-3 py-2 shadow-sm fw-bold border-0" style="font-size: 0.65rem;">
+                            {{ strtoupper($produk->kategori->nama ?? 'Varian Roti') }}
+                        </span>
                     </div>
-                @endif
+                </div>
             </div>
         </div>
 
-        {{-- SISI KANAN: Detail & Order Form --}}
-        <div class="col-lg-7">
-            <div class="ps-lg-3">
-                {{-- Kategori & Stok Badge --}}
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <span class="badge bg-soft-blue text-primary px-3 py-2 rounded-pill small fw-bold">
-                        {{ $produk->kategori->nama ?? 'Varian Roti' }}
-                    </span>
+        {{-- SISI KANAN: Informasi & Form --}}
+        <div class="col-md-7 col-lg-6">
+            <div class="card border-0 bg-transparent">
+                <div class="card-body p-0">
+                    {{-- Navigasi Balik yang Simpel --}}
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb small p-0 m-0">
+                            <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none text-muted">Beranda</a></li>
+                            <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Detail Produk</li>
+                        </ol>
+                    </nav>
+
+                    <h2 class="fw-bold text-dark mb-1" style="font-family: 'Playfair Display', serif; font-size: 2rem;">
+                        {{ $produk->nama_produk }}
+                    </h2>
+                    
+                    <div class="h3 fw-bold text-primary mb-3">
+                        Rp {{ number_format($produk->harga, 0, ',', '.') }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-uppercase small fw-bold text-muted d-block mb-1" style="letter-spacing: 1px;">Deskripsi</label>
+                        <p class="text-muted" style="line-height: 1.6; font-size: 0.95rem;">
+                            {{ $produk->deskripsi ?? 'Roti lezat yang dipanggang segar setiap hari menggunakan bahan premium untuk kualitas rasa terbaik bagi keluarga Anda.' }}
+                        </p>
+                    </div>
+
+                    <hr class="border-light opacity-10 my-4">
+
                     @if($produk->stok > 0)
-                        <span class="text-success small fw-bold">
-                            <i class="bi bi-check-circle-fill me-1"></i> Stok Tersedia: {{ $produk->stok }}
-                        </span>
-                    @else
-                        <span class="text-danger small fw-bold">
-                            <i class="bi bi-x-circle-fill me-1"></i> Stok Habis
-                        </span>
-                    @endif
-                </div>
+                        <form action="{{ route('pelanggan.keranjang.store') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="produk_id" value="{{ $produk->id }}">
+                            
+                            <div class="row g-4 align-items-end">
+                                {{-- Selector Jumlah --}}
+                                <div class="col-auto">
+                                    <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Jumlah</label>
+                                    <div class="d-flex align-items-center bg-white border rounded-pill p-1 shadow-sm" style="width: fit-content;">
+                                        <button class="btn btn-link text-dark p-0 px-2 border-0" type="button" onclick="decrement()">
+                                            <i class="bi bi-dash-lg"></i>
+                                        </button>
+                                        <input type="number" id="qty-input" name="jumlah" class="form-control border-0 bg-transparent text-center fw-bold p-0" 
+                                               value="1" min="1" max="{{ $produk->stok }}" readonly style="width: 40px; font-size: 0.9rem;">
+                                        <button class="btn btn-link text-dark p-0 px-2 border-0" type="button" onclick="increment()">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
-                <h1 class="display-6 fw-bold mb-3 text-dark" style="font-family: 'Playfair Display', serif;">
-                    {{ $produk->nama_produk }}
-                </h1>
+                                {{-- Stok Info --}}
+                                <div class="col">
+                                    <span class="small fw-bold text-success bg-success bg-opacity-10 px-3 py-1 rounded-pill">
+                                        <i class="bi bi-box-seam me-1"></i> Stok: {{ $produk->stok }}
+                                    </span>
+                                </div>
 
-                <h3 class="text-primary fw-bold mb-4">
-                    Rp {{ number_format($produk->harga, 0, ',', '.') }}
-                </h3>
-
-                <hr class="opacity-10 my-4">
-
-                <h6 class="fw-bold text-uppercase small mb-2" style="letter-spacing: 1px;">Deskripsi Produk</h6>
-                <p class="text-muted mb-5" style="line-height: 1.8; font-size: 0.95rem;">
-                    {{ $produk->deskripsi ?? 'Roti segar yang dibuat dengan bahan pilihan, tanpa pengawet, dan dipanggang setiap hari untuk menjaga kualitas rasa serta kelembutannya.' }}
-                </p>
-
-                @if($produk->stok > 0)
-                    <form action="{{ route('pelanggan.keranjang.store') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="produk_id" value="{{ $produk->id }}">
-                        
-                        <div class="row g-3 align-items-center mb-4">
-                            <div class="col-auto">
-                                <label class="fw-bold small text-muted text-uppercase">Jumlah</label>
-                                <div class="input-group mt-1" style="width: 140px;">
-                                    <button class="btn btn-outline-secondary rounded-start-pill border-end-0" type="button" onclick="decrement()">-</button>
-                                    <input type="number" id="qty-input" name="jumlah" class="form-control text-center bg-white border-x-0" value="1" min="1" max="{{ $produk->stok }}" readonly>
-                                    <button class="btn btn-outline-secondary rounded-end-pill border-start-0" type="button" onclick="increment()">+</button>
+                                {{-- Tombol Action --}}
+                                <div class="col-12">
+                                    <div class="d-flex gap-2 mt-2">
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-3 fw-bold shadow-sm flex-grow-1" style="letter-spacing: 0.5px; font-size: 0.85rem;">
+                                            <i class="bi bi-cart-plus me-2"></i> TAMBAH KE KERANJANG
+                                        </button>
+                                        <a href="{{ route('home') }}" class="btn btn-outline-secondary rounded-pill px-4 py-3 fw-bold" style="font-size: 0.85rem;">
+                                            KEMBALI
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
+                        </form>
+                    @else
+                        <div class="alert alert-light border-0 shadow-sm rounded-4 p-3 d-flex align-items-center">
+                            <i class="bi bi-info-circle text-danger fs-4 me-3"></i>
+                            <div class="small">
+                                <strong class="text-danger d-block">Maaf, Stok Sedang Kosong!</strong>
+                                Kami akan segera memanggang batch baru untuk Anda.
+                            </div>
                         </div>
-
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold text-uppercase shadow-sm" style="font-size: 0.85rem; letter-spacing: 1px;">
-                                <i class="bi bi-cart-plus me-2"></i> Tambah ke Keranjang
-                            </button>
-                            
-                        </div>
-                    </form>
-                @else
-                    <div class="alert alert-soft-danger rounded-4 border-0 d-flex align-items-center p-3 mb-4">
-                        <i class="bi bi-info-circle me-3 fs-4"></i>
-                        <div>
-                            <strong class="d-block">Maaf, Stok Habis!</strong>
-                            <span class="small">Roti ini sedang dalam proses pemanggangan kembali. Cek lagi nanti ya!</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('home') }}#produk" class="btn btn-outline-secondary btn-lg px-5 py-3 rounded-pill fw-bold text-uppercase">
-                        Kembali Cari Roti
-                    </a>
-                @endif
-
-                {{-- Fitur Unggulan --}}
-                <div class="row mt-5 g-3">
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-center small text-muted">
-                            <i class="bi bi-truck me-2 text-primary fs-5"></i>
-                            <span>Pengiriman Cepat</span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-center small text-muted">
-                            <i class="bi bi-patch-check me-2 text-primary fs-5"></i>
-                            <span>Bahan Premium</span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-center small text-muted">
-                            <i class="bi bi-sun me-2 text-primary fs-5"></i>
-                            <span>Selalu Segar</span>
-                        </div>
-                    </div>
+                        <a href="{{ route('home') }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 mt-2 fw-bold">Kembali</a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -129,12 +119,11 @@
 </div>
 
 <style>
-    .bg-soft-blue { background-color: #F0F7FF; }
-    .alert-soft-danger { background-color: #FFF5F5; color: #C53030; }
-    .product-image-wrapper img { transition: transform 0.5s ease; }
-    .product-image-wrapper:hover img { transform: scale(1.05); }
+    body { background-color: #F8FAFC; }
+    .btn-primary { background-color: #4A90E2; border: none; }
+    .btn-primary:hover { background-color: #357ABD; transform: translateY(-2px); transition: 0.3s; }
     
-    /* Chrome, Safari, Edge, Opera: hilangkan spin wheel number */
+    /* Hilangkan Spin Arrow pada Input Number */
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 </style>
