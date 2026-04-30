@@ -94,7 +94,6 @@
                     <div class="mb-4 text-center">
                         <label class="text-muted small d-block mb-2 text-uppercase fw-bold">Status Saat Ini</label>
                         @php 
-                            // Mapping Nama Status ke Bahasa Indonesia
                             $statusMap = [
                                 'pending' => 'Menunggu',
                                 'diproses' => 'Bukti Bayar',
@@ -168,6 +167,29 @@
                     <small class="text-muted d-block mb-1">Email:</small>
                     <div class="fw-medium">{{ $pesanan->user->email }}</div>
                 </div>
+
+                {{-- INTEGRASI NOMOR TELEPON & WHATSAPP --}}
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-1">Nomor Telepon:</small>
+                    <div class="fw-bold d-flex align-items-center">
+                        {{ $pesanan->user->no_telp ?? 'Belum diatur' }}
+                        
+                        @if($pesanan->user->no_telp)
+                            @php
+                                // Bersihkan karakter non-angka
+                                $cleanPhone = preg_replace('/[^0-9]/', '', $pesanan->user->no_telp);
+                                // Konversi 08xxx ke 628xxx
+                                if (str_starts_with($cleanPhone, '0')) {
+                                    $cleanPhone = '62' . substr($cleanPhone, 1);
+                                }
+                            @endphp
+                            <a href="https://wa.me/{{ $cleanPhone }}" target="_blank" class="ms-2 text-success" title="Chat via WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
                 <div class="mb-0">
                     <small class="text-muted d-block mb-1">Alamat Tujuan:</small>
                     <p class="small fw-medium mb-0" style="line-height: 1.6;">{{ $pesanan->alamat_pengiriman }}</p>

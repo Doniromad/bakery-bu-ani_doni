@@ -18,21 +18,11 @@
             --gold-accent: #FFD700;
         }
 
-        /* 1. SMOOTH SCROLL */
-        html {
-            scroll-behavior: smooth;
-        }
-
         body { 
             font-family: 'DM Sans', sans-serif; 
             background-color: var(--soft-blue); 
             color: var(--slate-dark); 
             padding-top: 85px; 
-        }
-
-        /* 2. OFFSET SCROLL UNTUK ANCHOR */
-        #produk {
-            scroll-margin-top: 110px;
         }
 
         /* NAVBAR STYLE */
@@ -76,47 +66,6 @@
             background-color: var(--primary-blue);
         }
 
-        /* HERO BANNER STYLING */
-        .hero-banner-container {
-            height: 400px;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .hero-banner-container::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(30, 41, 59, 0.5); 
-            z-index: 1;
-        }
-
-        .hero-text-overlay {
-            position: relative;
-            z-index: 2;
-            max-width: 800px;
-            padding: 0 20px;
-        }
-
-        .hero-text-overlay h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-        }
-
-        .hero-text-overlay p {
-            letter-spacing: 2px;
-            opacity: 0.9;
-        }
-
         .search-box { position: relative; width: 180px; }
         .search-box input { 
             border-radius: 50px; 
@@ -152,11 +101,18 @@
         .footer-brand { font-family: 'Playfair Display', serif; color: var(--slate-dark); }
     </style>
 </head>
-<body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="120">
+<body>
 
 <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="{{ route('home') }}">TOKO ROTI IBU ANI</a>
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
+            <div style="width: 40px; height: 40px; background: white; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #eee;" class="me-2">
+                <img src="{{ asset('images/logo-toko.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <span class="fw-bold text-primary text-uppercase" style="letter-spacing: 1.5px; font-size: 1.15rem; font-family: 'Playfair Display', serif;">
+                Bakery Bu Ani
+            </span>
+        </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -165,11 +121,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('/') && !request()->has('search') ? 'active' : '' }}" 
-                       id="nav-beranda" href="{{ route('home') }}">Beranda</a>
+                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Beranda</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->has('search') ? 'active' : '' }}" id="nav-produk" href="{{ route('home') }}#produk">Produk</a>
+                    {{-- Navigasi langsung ke halaman produk --}}
+                    <a class="nav-link {{ request()->routeIs('pelanggan.produk.index') || request()->routeIs('pelanggan.kategori') ? 'active' : '' }}" href="{{ route('pelanggan.produk.index') }}">Produk</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('pelanggan.riwayat') ? 'active' : '' }}" href="{{ route('pelanggan.riwayat') }}">Pesanan</a>
@@ -180,7 +136,8 @@
             </ul>
 
             <div class="d-flex align-items-center">
-                <form action="{{ route('home') }}" method="GET" class="search-box d-none d-xl-block">
+                {{-- Form pencarian diarahkan ke halaman produk --}}
+                <form action="{{ route('pelanggan.produk.index') }}" method="GET" class="search-box d-none d-xl-block">
                     <i class="bi bi-search"></i>
                     <input type="text" name="search" placeholder="CARI ROTI..." value="{{ request('search') }}">
                 </form>
@@ -219,75 +176,74 @@
     </div>
 </nav>
 
-{{-- Konten Utama --}}
 <main class="container">
     @yield('content')
 </main>
 
-<footer>
-    <div class="container text-center">
-        <h6 class="footer-brand fw-bold mb-2">TOKO ROTI IBU ANI</h6>
-        <p class="mb-0 text-muted">© 2026 TOKO ROTI IBU ANI. ALL RIGHTS RESERVED.</p>
+<footer class="mt-5 pt-5 pb-3 bg-white border-top">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <h5 class="fw-bold text-primary mb-3" style="font-family: 'Playfair Display', serif;">Bakery Bu Ani</h5>
+                <p class="text-muted small mb-4" style="line-height: 1.8;">
+                    Menyajikan kehangatan dan kelembutan roti autentik sejak tahun 2026. Kami berkomitmen memberikan kualitas terbaik dengan bahan-bahan pilihan setiap harinya.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary rounded-circle"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="btn btn-sm btn-outline-primary rounded-circle"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="btn btn-sm btn-outline-primary rounded-circle"><i class="bi bi-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-2 ms-lg-auto">
+                <h6 class="fw-bold text-dark mb-3">Navigasi</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="{{ route('home') }}" class="text-decoration-none text-muted">Beranda</a></li>
+                    {{-- Footer juga diarahkan ke halaman produk --}}
+                    <li class="mb-2"><a href="{{ route('pelanggan.produk.index') }}" class="text-decoration-none text-muted">Produk</a></li>
+                    <li class="mb-2"><a href="{{ route('pelanggan.riwayat') }}" class="text-decoration-none text-muted">Pesanan</a></li>
+                    <li class="mb-2"><a href="{{ route('profile.edit') }}" class="text-decoration-none text-muted">Profil</a></li>
+                </ul>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <h6 class="fw-bold text-dark mb-3">Hubungi Kami</h6>
+                <ul class="list-unstyled small text-muted">
+                    <li class="mb-2 d-flex align-items-start">
+                        <i class="bi bi-geo-alt text-primary me-2 mt-1"></i>
+                        <span>Jl. Bakery No. 12, Kota Roti, Indonesia</span>
+                    </li>
+                    <li class="mb-2 d-flex align-items-center">
+                        <i class="bi bi-telephone text-primary me-2"></i>
+                        <span>+62 812-3456-7890</span>
+                    </li>
+                    <li class="mb-2 d-flex align-items-center">
+                        <i class="bi bi-envelope text-primary me-2"></i>
+                        <span>halo@bakerybuani.com</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2">
+                <h6 class="fw-bold text-dark mb-3">Jam Buka</h6>
+                <p class="text-muted small mb-1">Senin - Sabtu</p>
+                <p class="fw-bold text-dark small mb-3">07:00 - 20:00</p>
+                <p class="text-muted small mb-1">Minggu</p>
+                <p class="fw-bold text-dark small">08:00 - 17:00</p>
+            </div>
+        </div>
+
+        <hr class="my-4 opacity-50">
+        
+        <div class="text-center">
+            <p class="mb-0 text-muted small">
+                &copy; 2026 <strong>Bakery Bu Ani</strong>. All Rights Reserved.
+            </p>
+        </div>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const navBeranda = document.getElementById('nav-beranda');
-        const navProduk = document.getElementById('nav-produk');
-
-        // LOGIKA AUTO SCROLL SAAT SEARCH
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('search')) {
-            const produkSection = document.getElementById('produk');
-            if (produkSection) {
-                setTimeout(() => {
-                    produkSection.scrollIntoView({ behavior: 'smooth' });
-                }, 300);
-            }
-        }
-
-        function clearActive() {
-            document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-        }
-
-        if (navProduk) {
-            navProduk.addEventListener('click', function() {
-                clearActive();
-                this.classList.add('active');
-            });
-        }
-
-        if (navBeranda) {
-            navBeranda.addEventListener('click', function() {
-                if (window.location.pathname === '/') {
-                    clearActive();
-                    this.classList.add('active');
-                }
-            });
-        }
-
-        window.addEventListener('scroll', function() {
-            const produkSection = document.getElementById('produk');
-            if (produkSection && window.location.pathname === '/') {
-                const rect = produkSection.getBoundingClientRect();
-                if (rect.top <= 150) {
-                    clearActive();
-                    if (navProduk) navProduk.classList.add('active');
-                } else {
-                    if (!urlParams.has('search')) {
-                        clearActive();
-                        if (navBeranda) navBeranda.classList.add('active');
-                    }
-                }
-            }
-        });
-    });
-</script>
 
 </body>
 </html>

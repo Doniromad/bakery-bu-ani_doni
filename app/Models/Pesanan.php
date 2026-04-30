@@ -16,11 +16,12 @@ class Pesanan extends Model
         'status', 
         'alamat_pengiriman', 
         'metode_bayar',
-        'bukti_bayar' // Kolom baru ditambahkan di sini
+        'bukti_bayar' 
     ];
 
     /**
      * Relasi ke User (Pemesan)
+     * Memungkinkan pemanggilan data pelanggan seperti: $pesanan->user->no_telp
      */
     public function user()
     {

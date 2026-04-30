@@ -93,25 +93,23 @@
             overflow: hidden;
         }
 
-        /* CONTAINER LOGO SESUAI LOGIN */
         .hero-logo-wrap {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 90px; height: 90px;
+            width: 85px; height: 85px;
             background: #FFFFFF;
-            border-radius: 20px;
+            border-radius: 50%;
             margin-bottom: 16px;
-            padding: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             overflow: hidden;
+            border: 3px solid var(--white);
         }
         .hero-logo-wrap img {
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .hero-title {
@@ -297,29 +295,19 @@
 <div class="register-wrapper">
     <div class="card-main">
 
-        <div class="card-hero" style="background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%); padding: 40px 36px 32px; text-align: center; border-radius: 20px 20px 0 0;">
-    
-    {{-- LOGO DI ATAS: Bulat Sempurna & Full --}}
-    <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background: white; border-radius: 50%; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); overflow: hidden; border: 2px solid white;">
-        <img src="{{ asset('images/logo-toko.png') }}" 
-             alt="Logo Toko Roti Ibu Ani" 
-             style="width: 100%; height: 100%; object-fit: cover;">
-    </div>
-
-    {{-- TULISAN DI BAWAH --}}
-    <h1 class="hero-title" style="font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: white; line-height: 1.2; margin-bottom: 6px;">
-        Bergabung Sekarang
-    </h1>
-    <p class="hero-sub" style="color: rgba(255,255,255,0.85); font-size: 0.9rem; font-weight: 300; margin: 0;">
-        Nikmati roti segar setiap hari bersama kami.
-    </p>
-</div>
+        <div class="card-hero">
+            <div class="hero-logo-wrap">
+                <img src="{{ asset('images/logo-toko.png') }}" alt="Logo Toko Roti Ibu Ani">
+            </div>
+            <h1 class="hero-title">Bergabung Sekarang</h1>
+            <p class="hero-sub">Nikmati roti segar setiap hari bersama kami.</p>
+        </div>
 
         <div class="steps-bar">
             <div class="step-dot active"></div>
             <div class="step-dot active"></div>
-            <div class="step-dot"></div>
-            <span class="step-label" style="margin-left:8px;">Akun Baru</span>
+            <div class="step-dot active"></div>
+            <span class="step-label">Akun Baru</span>
         </div>
 
         <div class="card-body-custom">
@@ -355,6 +343,17 @@
                         <input type="email" id="email" name="email" 
                                class="form-input" value="{{ old('email') }}" 
                                placeholder="nama@email.com" required>
+                    </div>
+                </div>
+
+                {{-- PENAMBAHAN NOMOR TELEPON --}}
+                <div>
+                    <label for="no_telp" class="form-label-custom">Nomor Telepon</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-telephone input-icon"></i>
+                        <input type="number" id="no_telp" name="no_telp" 
+                               class="form-input" value="{{ old('no_telp') }}" 
+                               placeholder="Contoh: 08123456789" required>
                     </div>
                 </div>
 

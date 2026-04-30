@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Toko Roti Ibu Ani</title>
+    <title>Login - Bakery Bu Ani</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -87,48 +87,10 @@
 
         .card-hero {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
-            padding: 45px 36px 40px;
+            padding: 40px 30px;
             text-align: center;
             position: relative;
             overflow: hidden;
-        }
-        
-        /* CONTAINER LOGO - DIBUAT LEBIH PAS */
-        .hero-logo-wrap {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100px; /* Sedikit lebih lebar */
-            height: 100px;
-            background: #FFFFFF; /* Putih bersih */
-            border-radius: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px; /* Ruang napas di dalam kotak */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow: hidden; /* Agar gambar tidak keluar jalur */
-        }
-
-        .hero-logo-wrap img {
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: contain; /* Memastikan logo tidak gepeng */
-        }
-
-        .hero-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.7rem;
-            font-weight: 700;
-            color: var(--white);
-            line-height: 1.2;
-            margin-bottom: 8px;
-        }
-        .hero-sub {
-            color: rgba(255,255,255,0.85);
-            font-size: 0.9rem;
-            font-weight: 300;
         }
 
         .card-body-custom {
@@ -260,28 +222,28 @@
 <div class="login-wrapper">
     <div class="card-main">
 
-        <div class="card-hero" style="background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%); padding: 30px 25px; border-radius: 20px 20px 0 0;">
-    {{-- Container Logo & Tulisan --}}
-    <div class="d-flex align-items-center justify-content-center" style="gap: 15px;">
-        
-        {{-- LOGO TANPA PADDING (FULL LINGKARAN) --}}
-        <div style="width: 60px; height: 60px; background: white; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 2px solid white;">
-            <img src="{{ asset('images/logo-toko.png') }}" 
-                 alt="Logo" 
-                 style="width: 100%; height: 100%; object-fit: cover;"> {{-- Object-fit cover akan memenuhi lingkaran --}}
-        </div>
+        <div class="card-hero">
+            {{-- Container Logo & Tulisan disusun secara vertikal (Stacked) --}}
+            <div class="d-flex flex-column align-items-center justify-content-center">
+                
+                {{-- LOGO BULAT PENUH --}}
+                <div style="width: 80px; height: 80px; background: white; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 3px solid white; margin-bottom: 15px;">
+                    <img src="{{ asset('images/logo-toko.png') }}" 
+                         alt="Logo" 
+                         style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
 
-        {{-- TULISAN --}}
-        <div style="text-align: left;">
-            <h5 class="fw-bold m-0" style="color: white; font-family: 'Playfair Display', serif; line-height: 1.2;">
-                Toko Roti<br>Ibu Ani
-            </h5>
-            <p class="m-0" style="color: rgba(255,255,255,0.85); font-size: 0.75rem;">
-                Selamat datang kembali!
-            </p>
+                {{-- TULISAN RATA TENGAH --}}
+                <div class="text-center">
+                    <h4 class="fw-bold m-0" style="color: white; font-family: 'Playfair Display', serif; line-height: 1.2; font-size: 1.8rem;">
+                        Bakery Bu Ani
+                    </h4>
+                    <p class="m-0 mt-1" style="color: rgba(255,255,255,0.85); font-size: 0.85rem;">
+                        Selamat datang kembali!
+                    </p>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
         <div class="card-body-custom">
             @if(session('status'))

@@ -5,8 +5,9 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Pelanggan;
 use App\Http\Controllers\ProfileController;
 
-// Halaman utama — langsung tampil produk TANPA harus login
-Route::get('/', [Pelanggan\ProdukController::class, 'index'])->name('home');
+// 1. HALAMAN UTAMA (Landing Page)
+// Menggunakan method 'home' (Menampilkan Banner, USP, dan Cuplikan Produk)
+Route::get('/', [Pelanggan\ProdukController::class, 'home'])->name('home');
 
 // ===== ADMIN ROUTES =====
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -32,8 +33,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // ===== PELANGGAN ROUTES =====
-// Produk & Kategori bisa dilihat tanpa login
+// 2. HALAMAN KHUSUS PRODUK (Katalog Lengkap)
+// Menggunakan method 'index' (Halaman mandiri untuk cari roti & filter kategori)
 Route::get('/produk', [Pelanggan\ProdukController::class, 'index'])->name('pelanggan.produk.index');
+
 Route::get('/produk/{produk}', [Pelanggan\ProdukController::class, 'show'])->name('pelanggan.produk.show');
 Route::get('/kategori/{slug}', [Pelanggan\ProdukController::class, 'category'])->name('pelanggan.kategori');
 
@@ -49,7 +52,6 @@ Route::middleware(['auth'])->name('pelanggan.')->group(function () {
     Route::get('/riwayat', [Pelanggan\PesananController::class, 'index'])->name('riwayat');
     Route::get('/riwayat/{pesanan}', [Pelanggan\PesananController::class, 'show'])->name('riwayat.show');
     
-    // BARIS PENTING: Route Upload Bukti Bayar
     Route::post('/riwayat/{pesanan}/upload-bukti', [Pelanggan\PesananController::class, 'uploadBukti'])->name('pesanan.upload-bukti');
 });
 
@@ -64,6 +66,7 @@ Route::get('/dashboard', function () {
     if (auth()->user()->isAdmin()) {
         return redirect()->route('admin.dashboard');
     }
+    // Setelah login, arahkan pelanggan ke katalog produk
     return redirect()->route('pelanggan.produk.index');
 })->middleware('auth')->name('dashboard');
 

@@ -10,57 +10,87 @@ use Illuminate\Http\Request;
 
 class ProdukController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * 1. HALAMAN BERANDA (Landing Page)
+     */
+    public function home()
     {
-        // 1. Ambil data banner (Hero Image)
         $banner = Banner::first();
 
-        // 2. Ambil kata kunci dari input 'search'
-        $search = $request->input('search');
-
-        // 3. Ambil semua kategori untuk filter
-        $kategoris = Kategori::all();
-
-        // 4. Query produk yang stoknya tersedia
+        // UBAH DISINI: Ambil maksimal 6 produk TERBARU
         $produks = Produk::where('stok', '>', 0)
-            ->when($search, function($query, $search) {
-                return $query->where('nama_produk', 'like', "%{$search}%")
-                             ->orWhere('deskripsi', 'like', "%{$search}%");
-            })
             ->latest()
-            ->paginate(12)
-            ->withQueryString();
+            ->take(6) 
+            ->get();
 
-        // 5. Logika Penentu: Apakah user sedang di Beranda atau di Katalog Produk?
-        // Flag $is_home akan bernilai true jika user mengakses URL '/'
-        $is_home = $request->is('/');
+        // Tetap mengambil maksimal 3 produk TERFAVORIT
+        $favorit_produks = Produk::where('stok', '>', 0)
+            ->orderBy('terjual', 'desc') 
+            ->take(3) 
+            ->get();
 
-        return view('pelanggan.produk.index', compact('produks', 'kategoris', 'search', 'banner', 'is_home'));
+        return view('index', compact('banner', 'produks', 'favorit_produks'));
     }
 
     /**
-     * Menampilkan produk berdasarkan kategori
+     * 2. HALAMAN KATALOG (Produk Index)
      */
-    public function category($slug)
+    public function index(Request $request)
     {
-        // Tetap ambil banner (opsional, bisa disembunyikan di blade lewat $is_home)
-        $banner = Banner::first();
-        
-        $kategori = Kategori::where('slug', $slug)->firstOrFail();
+        $search = $request->input('search');
+        $sort   = $request->input('sort', 'terbaru'); 
         $kategoris = Kategori::all();
 
-        $produks = Produk::where('kategori_id', $kategori->id)
-                         ->where('stok', '>', 0)
-                         ->latest()
-                         ->paginate(12)
-                         ->withQueryString();
+        $query = Produk::where('stok', '>', 0);
 
-        // Jika masuk kategori, maka bukan lagi di halaman Beranda utama
-        $is_home = false;
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama_produk', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
 
-        return view('pelanggan.produk.index', compact('produks', 'kategori', 'kategoris', 'banner', 'is_home'));
+        if ($sort == 'termurah') {
+            $query->orderBy('harga', 'asc');
+        } elseif ($sort == 'termahal') {
+            $query->orderBy('harga', 'desc');
+        } else {
+            $query->latest(); 
+        }
+
+        $produks = $query->paginate(12)->withQueryString();
+
+        return view('pelanggan.produk.index', compact('produks', 'kategoris', 'search'));
     }
 
+    /**
+     * 3. HALAMAN KATEGORI
+     */
+    public function category(Request $request, $slug)
+    {
+        $kategori = Kategori::where('slug', $slug)->firstOrFail();
+        $kategoris = Kategori::all();
+        $sort = $request->input('sort', 'terbaru');
+
+        $query = Produk::where('kategori_id', $kategori->id)
+                       ->where('stok', '>', 0);
+
+        if ($sort == 'termurah') {
+            $query->orderBy('harga', 'asc');
+        } elseif ($sort == 'termahal') {
+            $query->orderBy('harga', 'desc');
+        } else {
+            $query->latest();
+        }
+
+        $produks = $query->paginate(12)->withQueryString();
+
+        return view('pelanggan.produk.index', compact('produks', 'kategori', 'kategoris'));
+    }
+
+    /**
+     * 4. HALAMAN DETAIL PRODUK
+     */
     public function show(Produk $produk)
     {
         return view('pelanggan.produk.show', compact('produk'));

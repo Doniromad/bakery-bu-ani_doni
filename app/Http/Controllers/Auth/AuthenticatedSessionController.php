@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,11 +29,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if (auth()->user()->role === 'admin') {
-        return redirect()->route('admin.dashboard');
+        // 1. Cek jika yang login adalah Admin
+        if (Auth::user()->role === 'admin') {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        // 2. Jika Pelanggan, arahkan ke Beranda (/) bukan ke Produk Index
+        // intended('/') akan mengarahkan user ke halaman yang ingin mereka tuju sebelumnya, 
+        // jika tidak ada, maka defaultnya ke Beranda.
+        return redirect()->intended('/');
     }
-    return redirect()->route('pelanggan.produk.index');
-}
 
     /**
      * Destroy an authenticated session.

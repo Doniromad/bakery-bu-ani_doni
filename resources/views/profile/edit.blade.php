@@ -36,6 +36,7 @@
                         @method('PUT')
 
                         <div class="row g-4">
+                            {{-- Nama Lengkap --}}
                             <div class="col-12">
                                 <label class="form-label-custom fw-bold small text-uppercase" style="letter-spacing: 1px; color: #64748b;">Nama Lengkap</label>
                                 <div class="input-group">
@@ -47,6 +48,7 @@
                                 @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
+                            {{-- Alamat Email --}}
                             <div class="col-12">
                                 <label class="form-label-custom fw-bold small text-uppercase" style="letter-spacing: 1px; color: #64748b;">Alamat Email</label>
                                 <div class="input-group">
@@ -58,6 +60,19 @@
                                 @error('email') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
+                            {{-- Nomor Telepon --}}
+                            <div class="col-12">
+                                <label class="form-label-custom fw-bold small text-uppercase" style="letter-spacing: 1px; color: #64748b;">Nomor Telepon</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 12px 0 0 12px;"><i class="bi bi-telephone"></i></span>
+                                    <input type="number" name="no_telp" class="form-control border-start-0 py-2 @error('no_telp') is-invalid @enderror" 
+                                           style="border-radius: 0 12px 12px 0; background-color: #f8fafc;"
+                                           value="{{ old('no_telp', $user->no_telp) }}" placeholder="Contoh: 08123456789">
+                                </div>
+                                @error('no_telp') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
+
+                            {{-- Keamanan Akun --}}
                             <div class="col-12 mt-5 mb-2">
                                 <div class="d-flex align-items-center">
                                     <h6 class="fw-bold m-0 text-dark"><i class="bi bi-shield-lock me-2"></i>Keamanan Akun</h6>

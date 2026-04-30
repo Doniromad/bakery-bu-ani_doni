@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'no_telp', // Tambahkan kolom ini agar bisa disimpan
+        'role',    
     ];
 
     /**
@@ -46,18 +48,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function pesanan()
-{
-    return $this->hasMany(Pesanan::class);
-}
+    {
+        return $this->hasMany(Pesanan::class);
+    }
 
-public function keranjang()
-{
-    return $this->hasMany(Keranjang::class);
-}
+    public function keranjang()
+    {
+        return $this->hasMany(Keranjang::class);
+    }
 
-public function isAdmin()
-{
-    return $this->role === 'admin';
-}
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
 }
