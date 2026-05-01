@@ -293,7 +293,7 @@
                 </div>
 
                 <button type="submit" class="btn-submit">
-                    <i class="bi bi-box-arrow-in-right"></i> Masuk
+                     Masuk
                 </button>
 
                 <div class="register-row">
@@ -304,7 +304,7 @@
 
         <div class="card-footer-custom">
             <a href="{{ route('home') }}">
-                <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+                Kembali ke Beranda
             </a>
         </div>
     </div>

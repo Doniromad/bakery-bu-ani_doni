@@ -410,7 +410,7 @@
 
         <div class="card-footer-custom">
             <a href="{{ route('home') }}">
-                <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+                 Kembali ke Beranda
             </a>
         </div>
     </div>
