@@ -46,17 +46,18 @@
                             </td>
                             <td class="text-center">
                                 @php 
-                                    $badges = [
-                                        'pending'    => ['color' => 'warning', 'icon' => 'hourglass-split'],
-                                        'diproses'   => ['color' => 'info',    'icon' => 'gear-fill'],
-                                        'dikirim'    => ['color' => 'primary', 'icon' => 'truck'],
-                                        'selesai'    => ['color' => 'success', 'icon' => 'check-circle-fill'],
-                                        'dibatalkan' => ['color' => 'danger',  'icon' => 'x-circle-fill']
-                                    ];
-                                    $st = $badges[$pesanan->status] ?? ['color' => 'secondary', 'icon' => 'question'];
+                                    $rawStatus = strtolower($pesanan->status);
+                                    if ($rawStatus == 'selesai') {
+                                        $st = ['color' => 'success', 'label' => 'Selesai'];
+                                    } elseif ($rawStatus == 'dibatalkan') {
+                                        $st = ['color' => 'danger', 'label' => 'Dibatalkan'];
+                                    } else {
+                                        // Segala status selain Selesai & Dibatalkan dianggap Menunggu Konfirmasi
+                                        $st = ['color' => 'warning', 'label' => 'Menunggu'];
+                                    }
                                 @endphp
-                                <span class="badge rounded-pill px-3 py-2 bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25" style="font-size: 0.7rem; width: 105px;">
-                                    <i class="bi bi-{{ $st['icon'] }} me-1"></i> {{ strtoupper($pesanan->status) }}
+                                <span class="badge rounded-pill px-3 py-2 bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25" style="font-size: 0.75rem; width: 100px;">
+                                    {{ strtoupper($st['label']) }}
                                 </span>
                             </td>
                             <td class="text-center small">
@@ -67,8 +68,8 @@
                             </td>
                             <td class="pe-4 text-center">
                                 <a href="{{ route('admin.pesanan.show', $pesanan) }}" 
-                                   class="btn btn-sm text-white px-3 py-2 rounded-pill fw-bold shadow-sm btn-detail-custom" 
-                                   style="background-color: #8B4513; border: none; font-size: 0.7rem; letter-spacing: 0.5px; transition: 0.3s;">
+                                   class="btn btn-sm text-white px-3 py-2 rounded-pill fw-bold btn-detail-custom" 
+                                   style="background-color: #8B4513; border: none; font-size: 0.7rem; letter-spacing: 0.5px;">
                                     <i class="bi bi-eye-fill me-1"></i> DETAIL
                                 </a>
                             </td>
@@ -96,14 +97,14 @@
                 <div class="card border-0 shadow-sm rounded-4 position-relative overflow-hidden card-mobile-hover">
                     {{-- Indikator Status Warna di Sisi Kiri Kartu --}}
                     @php 
-                        $badges = [
-                            'pending'    => ['color' => 'warning', 'icon' => 'hourglass-split'],
-                            'diproses'   => ['color' => 'info',    'icon' => 'gear-fill'],
-                            'dikirim'    => ['color' => 'primary', 'icon' => 'truck'],
-                            'selesai'    => ['color' => 'success', 'icon' => 'check-circle-fill'],
-                            'dibatalkan' => ['color' => 'danger',  'icon' => 'x-circle-fill']
-                        ];
-                        $st = $badges[$pesanan->status] ?? ['color' => 'secondary', 'icon' => 'question'];
+                        $rawStatus = strtolower($pesanan->status);
+                        if ($rawStatus == 'selesai') {
+                            $st = ['color' => 'success', 'label' => 'Selesai'];
+                        } elseif ($rawStatus == 'dibatalkan') {
+                            $st = ['color' => 'danger', 'label' => 'Dibatalkan'];
+                        } else {
+                            $st = ['color' => 'warning', 'label' => 'Menunggu'];
+                        }
                     @endphp
                     <div class="position-absolute top-0 bottom-0 start-0 bg-{{ $st['color'] }}" style="width: 4px;"></div>
                     
@@ -112,8 +113,8 @@
                             <code class="fw-bold px-2 py-1 rounded" style="font-size: 0.8rem; background-color: #f8f9fa; color: #8B4513; border: 1px solid #e9ecef;">
                                 #{{ $pesanan->kode_pesanan }}
                             </code>
-                            <span class="badge rounded-pill px-2 py-1 bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25" style="font-size: 0.65rem;">
-                                <i class="bi bi-{{ $st['icon'] }} me-1"></i> {{ strtoupper($pesanan->status) }}
+                            <span class="badge rounded-pill px-3 py-1 bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25" style="font-size: 0.7rem;">
+                                {{ strtoupper($st['label']) }}
                             </span>
                         </div>
                         
@@ -136,7 +137,7 @@
                                     Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}
                                 </span>
                             </div>
-                            <a href="{{ route('admin.pesanan.show', $pesanan) }}" class="btn btn-sm text-white px-3 rounded-pill fw-bold shadow-sm" style="background-color: #8B4513; font-size: 0.7rem; padding-top: 0.4rem; padding-bottom: 0.4rem;">
+                            <a href="{{ route('admin.pesanan.show', $pesanan) }}" class="btn btn-sm text-white px-3 rounded-pill fw-bold btn-detail-custom" style="background-color: #8B4513; font-size: 0.7rem; padding-top: 0.4rem; padding-bottom: 0.4rem;">
                                 <i class="bi bi-eye-fill me-1"></i> DETAIL
                             </a>
                         </div>
@@ -178,7 +179,10 @@
     .table > :not(caption) > * > * { border-bottom-width: 1px; border-color: #f8f9fa; vertical-align: middle; }
     .table-row-hover { transition: background-color 0.2s ease; }
     .table-row-hover:hover { background-color: #fffbf7 !important; }
-    .btn-detail-custom:hover { background-color: #5D4037 !important; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(93, 64, 55, 0.3) !important; }
+    
+    /* Tombol Detail Tema Bakery */
+    .btn-detail-custom { transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(139, 69, 19, 0.1); }
+    .btn-detail-custom:hover { background-color: #6b3410 !important; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(139, 69, 19, 0.3) !important; color: white !important; }
 
     /* Hover Animasi Card Mobile */
     .card-mobile-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
-use Illuminate\Http\Request; // Pastikan ini ada
-use Illuminate\Support\Facades\File; // Pastikan ini ada
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class PesananController extends Controller
 {
@@ -59,9 +59,10 @@ class PesananController extends Controller
             // Pindahkan file ke folder public
             $file->move($tujuanFolder, $namaFile);
 
-            // 3. Update nama file ke database
+            // 3. Update nama file DAN STATUS ke database
             $pesanan->update([
-                'bukti_bayar' => $namaFile
+                'bukti_bayar' => $namaFile,
+                'status'      => 'diproses' // <--- INI KUNCI PERBAIKANNYA
             ]);
 
             return back()->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu verifikasi admin.');

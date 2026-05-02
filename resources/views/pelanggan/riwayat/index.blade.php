@@ -63,25 +63,27 @@
                                 </td>
                                 <td class="text-center">
                                     @php 
-                                        $statusMap = ['pending' => 'Menunggu','diproses' => 'Bukti Bayar','dikirim' => 'Dikirim','selesai' => 'Selesai','dibatalkan' => 'Dibatalkan'];
-                                        $badges = [
-                                            'pending' => ['color' => 'warning', 'icon' => 'hourglass-split'],
-                                            'diproses' => ['color' => 'info', 'icon' => 'camera-fill'],
-                                            'dikirim' => ['color' => 'primary', 'icon' => 'truck'],
-                                            'selesai' => ['color' => 'success', 'icon' => 'check-circle-fill'],
-                                            'dibatalkan' => ['color' => 'danger', 'icon' => 'x-circle-fill']
-                                        ];
-                                        $currentStatus = strtolower($pesanan->status);
-                                        $st = $badges[$currentStatus] ?? ['color' => 'secondary', 'icon' => 'question-circle'];
+                                        $rawStatus = strtolower($pesanan->status);
+                                        
+                                        if ($rawStatus == 'selesai') {
+                                            $st = ['color' => 'success', 'label' => 'Selesai'];
+                                        } elseif ($rawStatus == 'dibatalkan') {
+                                            $st = ['color' => 'danger', 'label' => 'Dibatalkan'];
+                                        } elseif ($rawStatus == 'pending' && $pesanan->bukti_bayar) {
+                                            // Jika status pending tapi BUKTI SUDAH ADA = Berarti Ditolak Admin & Harus Kirim Ulang
+                                            $st = ['color' => 'danger', 'label' => 'Kirim Ulang'];
+                                        } else {
+                                            // Status pending biasa (belum ada bukti sama sekali)
+                                            $st = ['color' => 'warning', 'label' => 'Menunggu'];
+                                        }
                                     @endphp
-                                    <span class="badge rounded-pill px-3 py-2 bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25" style="font-size: 0.75rem;">
-                                        <i class="bi bi-{{ $st['icon'] }} me-1"></i>
-                                        {{ strtoupper($statusMap[$currentStatus] ?? $pesanan->status) }}
+                                    <span class="badge rounded-pill bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25 d-inline-flex align-items-center justify-content-center text-center" style="font-size: 0.75rem; width: 110px; height: 32px;">
+                                        {{ strtoupper($st['label']) }}
                                     </span>
                                 </td>
                                 <td class="pe-4 text-center">
                                     <a href="{{ route('pelanggan.riwayat.show', $pesanan) }}" 
-                                       class="btn btn-dark btn-sm px-4 rounded-pill fw-bold shadow-sm" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                       class="btn btn-dark btn-sm px-4 rounded-pill fw-bold shadow-sm d-inline-flex align-items-center justify-content-center" style="font-size: 0.75rem; letter-spacing: 0.5px; height: 32px;">
                                         DETAIL
                                     </a>
                                 </td>
@@ -101,16 +103,25 @@
                     <div class="card border border-light shadow-sm rounded-4 order-card-mobile position-relative overflow-hidden">
                         {{-- Garis Indikator Status di Samping Kiri --}}
                         @php 
-                            $currentStatus = strtolower($pesanan->status);
-                            $st = $badges[$currentStatus] ?? ['color' => 'secondary', 'icon' => 'question-circle'];
+                            $rawStatus = strtolower($pesanan->status);
+                            
+                            if ($rawStatus == 'selesai') {
+                                $st = ['color' => 'success', 'label' => 'Selesai'];
+                            } elseif ($rawStatus == 'dibatalkan') {
+                                $st = ['color' => 'danger', 'label' => 'Dibatalkan'];
+                            } elseif ($rawStatus == 'pending' && $pesanan->bukti_bayar) {
+                                $st = ['color' => 'danger', 'label' => 'Kirim Ulang'];
+                            } else {
+                                $st = ['color' => 'warning', 'label' => 'Menunggu'];
+                            }
                         @endphp
                         <div class="position-absolute top-0 bottom-0 start-0 bg-{{ $st['color'] }}" style="width: 5px;"></div>
                         
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="fw-bold text-dark fs-6" style="letter-spacing: 0.5px;">#{{ $pesanan->kode_pesanan }}</span>
-                                <span class="badge rounded-pill px-2 py-1 bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25" style="font-size: 0.6rem;">
-                                    <i class="bi bi-{{ $st['icon'] }} me-1"></i> {{ strtoupper($statusMap[$currentStatus] ?? $pesanan->status) }}
+                                <span class="badge rounded-pill bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25 d-inline-flex align-items-center justify-content-center text-center px-3 py-1" style="font-size: 0.7rem; min-height: 26px;">
+                                    {{ strtoupper($st['label']) }}
                                 </span>
                             </div>
 
@@ -124,7 +135,7 @@
                                     <span class="d-block text-muted" style="font-size: 0.65rem; letter-spacing: 0.5px;">TOTAL BAYAR</span>
                                     <span class="fw-bold text-primary fs-6">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</span>
                                 </div>
-                                <a href="{{ route('pelanggan.riwayat.show', $pesanan) }}" class="btn btn-dark btn-sm rounded-pill px-4 fw-bold" style="font-size: 0.7rem;">
+                                <a href="{{ route('pelanggan.riwayat.show', $pesanan) }}" class="btn btn-dark btn-sm rounded-pill px-4 fw-bold d-inline-flex align-items-center justify-content-center" style="font-size: 0.7rem; height: 30px;">
                                     DETAIL
                                 </a>
                             </div>

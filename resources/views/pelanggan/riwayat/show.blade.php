@@ -115,69 +115,107 @@
             {{-- Card Status --}}
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
                 <div class="card-header bg-primary text-white py-2 py-md-3 border-0">
-                    <h6 class="fw-bold m-0 text-uppercase small" style="letter-spacing: 1px;">Status & Pembayaran</h6>
+                    <h6 class="fw-bold m-0 text-uppercase small" style="letter-spacing: 1px;">Status Pesanan</h6>
                 </div>
-                <div class="card-body p-3 p-md-4">
-                    <div class="mb-3 mb-md-4">
-                        <label class="text-muted small d-block mb-2 text-uppercase fw-bold" style="font-size: 0.7rem;">Status Pesanan</label>
+                <div class="card-body p-3 p-md-4 text-center">
+                    <div class="mb-4">
+                        <label class="text-muted small d-block mb-2 text-uppercase fw-bold" style="font-size: 0.7rem;">Kondisi Saat Ini</label>
                         @php 
-                            $statusMap = ['pending' => 'Menunggu','diproses' => 'Bukti Bayar','dikirim' => 'Dalam Pengiriman','selesai' => 'Selesai','dibatalkan' => 'Dibatalkan'];
-                            $badges = [
-                                'pending' => ['color' => 'warning', 'icon' => 'hourglass-split'],
-                                'diproses' => ['color' => 'info', 'icon' => 'camera-fill'],
-                                'dikirim' => ['color' => 'primary', 'icon' => 'truck'],
-                                'selesai' => ['color' => 'success', 'icon' => 'check-circle-fill'],
-                                'dibatalkan' => ['color' => 'danger', 'icon' => 'x-circle-fill']
-                            ];
-                            $currentStatus = strtolower($pesanan->status);
-                            $st = $badges[$currentStatus] ?? ['color' => 'secondary', 'icon' => 'question'];
+                            $rawStatus = strtolower($pesanan->status);
+                            
+                            // Logika Tampilan Pelanggan
+                            if ($rawStatus == 'selesai') {
+                                $st = ['color' => 'success', 'label' => 'SELESAI'];
+                                $msg = "Hore! Pesananmu telah dikonfirmasi dan roti siap dinikmati.";
+                            } elseif ($rawStatus == 'dibatalkan') {
+                                $st = ['color' => 'danger', 'label' => 'DIBATALKAN'];
+                                $msg = "Maaf, pesanan dibatalkan oleh Admin. Silakan hubungi kami untuk info lebih lanjut.";
+                            } elseif ($rawStatus == 'pending' && $pesanan->bukti_bayar) {
+                                // Jika status pending tapi bukti sudah ada = Ditolak
+                                $st = ['color' => 'danger', 'label' => 'KIRIM ULANG'];
+                                $msg = "Bukti transfer ditolak oleh Admin. Silakan unggah ulang bukti yang valid.";
+                            } elseif ($pesanan->bukti_bayar) {
+                                // Status diproses/dikirim (ada bukti, belum selesai)
+                                $st = ['color' => 'info', 'label' => 'MENUNGGU VERIFIKASI'];
+                                $msg = "Bukti transfer telah diterima. Mohon tunggu konfirmasi dari Admin Bakery.";
+                            } else {
+                                // Status pending (belum bayar sama sekali)
+                                $st = ['color' => 'warning', 'label' => 'MENUNGGU'];
+                                $msg = "Silakan selesaikan pembayaran dan unggah bukti transfer agar pesanan diproses.";
+                            }
                         @endphp
-                        <span class="badge rounded-pill px-3 py-2 bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25 w-100" style="font-size: 0.75rem;">
-                            <i class="bi bi-{{ $st['icon'] }} me-1"></i> {{ $statusMap[$currentStatus] ?? strtoupper($pesanan->status) }}
+                        
+                        <span class="badge rounded-pill bg-{{ $st['color'] }} bg-opacity-10 text-{{ $st['color'] }} border border-{{ $st['color'] }} border-opacity-25 w-100 d-flex align-items-center justify-content-center" style="font-size: 0.85rem; height: 40px; letter-spacing: 0.5px;">
+                            {{ $st['label'] }}
                         </span>
+                        
+                        <p class="text-muted mt-3 mb-0" style="font-size: 0.75rem;">{{ $msg }}</p>
                     </div>
 
-                    <div class="mb-3">
-                        <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="bi bi-credit-card me-1"></i> Metode Pembayaran</small>
-                        <span class="fw-bold text-dark text-uppercase" style="font-size: 0.85rem;">{{ $pesanan->metode_bayar }}</span>
-                    </div>
-                    
-                    <div class="mb-0">
-                        <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="bi bi-calendar-event me-1"></i> Waktu Transaksi</small>
-                        <span class="fw-bold text-dark" style="font-size: 0.85rem;">{{ $pesanan->created_at->format('d M Y, H:i') }} WIB</span>
+                    <div class="d-flex justify-content-between text-start border-top pt-3">
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.65rem;"><i class="bi bi-credit-card me-1"></i> Metode</small>
+                            <span class="fw-bold text-dark text-uppercase" style="font-size: 0.8rem;">{{ $pesanan->metode_bayar }}</span>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted d-block" style="font-size: 0.65rem;"><i class="bi bi-calendar-event me-1"></i> Waktu</small>
+                            <span class="fw-bold text-dark" style="font-size: 0.8rem;">{{ $pesanan->created_at->format('d/m/Y, H:i') }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {{-- FORM UPLOAD BUKTI --}}
-            @if(str_contains(strtolower($pesanan->metode_bayar), 'transfer'))
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4" style="border: 2px dashed #0d6efd !important;">
-                <div class="card-body p-3 p-md-4">
-                    <h6 class="fw-bold text-dark mb-3 small text-uppercase"><i class="bi bi-cloud-arrow-up me-2 text-primary"></i>Konfirmasi Bayar</h6>
-                    
-                    @if($pesanan->bukti_bayar)
-                        <div class="mb-3 text-center">
-                            <img src="{{ asset('images/bukti_bayar/' . $pesanan->bukti_bayar) }}" class="img-fluid rounded-3 border shadow-sm mb-2" style="max-height: 120px; object-fit: cover;">
-                            <div class="alert alert-success py-1 px-2 border-0 rounded-2 mb-0" style="font-size: 0.7rem;">
-                                <i class="bi bi-check-circle-fill me-1"></i> Bukti terkirim
+            {{-- FORM UPLOAD BUKTI (Selalu muncul selama belum selesai/dibatalkan) --}}
+            @if($rawStatus != 'selesai' && $rawStatus != 'dibatalkan')
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4" style="border: 2px dashed #0d6efd !important;">
+                    <div class="card-body p-3 p-md-4 text-center">
+                        <h6 class="fw-bold text-dark mb-3 small text-uppercase"><i class="bi bi-cloud-arrow-up me-2 text-primary"></i>Konfirmasi Pembayaran</h6>
+                        
+                        @if($pesanan->bukti_bayar)
+                            <div class="mb-3 text-center">
+                                <img src="{{ asset('images/bukti_bayar/' . $pesanan->bukti_bayar) }}" class="img-fluid rounded-3 border shadow-sm mb-2" style="max-height: 120px; object-fit: cover;">
+                                
+                                {{-- Jika status pending (artinya Kirim Ulang), beri warning merah. Jika tidak, warna hijau --}}
+                                @if($rawStatus == 'pending')
+                                    <div class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 w-100" style="font-size: 0.7rem;">
+                                        <i class="bi bi-exclamation-circle-fill me-1"></i> Bukti Ditolak, Kirim Ulang!
+                                    </div>
+                                @else
+                                    <div class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 w-100" style="font-size: 0.7rem;">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Bukti Berhasil Diunggah
+                                    </div>
+                                @endif
                             </div>
-                        </div>
-                    @endif
+                        @endif
 
-                    @if(!in_array(strtolower($pesanan->status), ['selesai', 'dibatalkan']))
                         <form action="{{ route('pelanggan.pesanan.upload-bukti', $pesanan->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <div class="mb-2 mb-md-3">
+                            <div class="mb-3">
                                 <input type="file" name="bukti_bayar" class="form-control form-control-sm border-0 bg-light py-2" required accept="image/*">
-                                <div class="form-text mt-1" style="font-size: 0.6rem;">Format: JPG/PNG (Maks. 2MB)</div>
+                                <div class="form-text mt-1 text-muted" style="font-size: 0.6rem;">Format: JPG/PNG (Maks. 2MB)</div>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 fw-bold rounded-pill shadow-sm btn-sm py-2" style="font-size: 0.75rem;">
-                                {{ $pesanan->bukti_bayar ? 'GANTI BUKTI' : 'UNGGAH BUKTI' }}
+                                @if($rawStatus == 'pending' && $pesanan->bukti_bayar)
+                                    UNGGAH ULANG BUKTI TRANSFER
+                                @elseif($pesanan->bukti_bayar)
+                                    GANTI BUKTI TRANSFER
+                                @else
+                                    UNGGAH BUKTI TRANSFER
+                                @endif
                             </button>
                         </form>
-                    @endif
+                    </div>
                 </div>
-            </div>
+            @elseif($pesanan->bukti_bayar)
+                {{-- Jika sudah selesai tapi ada bukti bayarnya, tampilkan saja sbg history --}}
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
+                    <div class="card-header bg-white py-2 py-md-3 border-0 border-bottom text-center">
+                        <h6 class="fw-bold m-0 text-uppercase small text-muted" style="letter-spacing: 1px;">Bukti Pembayaran</h6>
+                    </div>
+                    <div class="card-body p-3 text-center bg-light">
+                        <img src="{{ asset('images/bukti_bayar/' . $pesanan->bukti_bayar) }}" class="img-fluid rounded-3 border shadow-sm" style="max-height: 150px; object-fit: cover;">
+                    </div>
+                </div>
             @endif
 
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
@@ -186,18 +224,23 @@
                 </div>
                 <div class="card-body p-3 p-md-4">
                     <div class="d-flex mb-3">
-                        <i class="bi bi-geo-alt-fill text-primary fs-5 me-2 me-md-3"></i>
+                        <i class="bi bi-geo-alt-fill text-primary fs-5 me-2 me-md-3 mt-1"></i>
                         <div>
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">Alamat Lengkap</small>
-                            <p class="fw-medium mb-0" style="font-size: 0.8rem; line-height: 1.5;">{{ $pesanan->alamat_pengiriman }}</p>
+                            <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">Alamat Lengkap</small>
+                            <p class="fw-medium mb-0 text-dark" style="font-size: 0.8rem; line-height: 1.5;">{{ $pesanan->alamat_pengiriman }}</p>
                         </div>
                     </div>
                     
-                    <hr class="opacity-10 my-2 my-md-3">
+                    <hr class="opacity-10 my-3">
                     
                     <div class="p-2 p-md-3 rounded-3 bg-light text-center">
-                        <p class="text-muted mb-1" style="font-size: 0.65rem;">Butuh bantuan pesanan ini?</p>
-                        <a href="https://wa.me/628123456789" class="text-primary fw-bold text-decoration-none" style="font-size: 0.75rem;">
+                        <p class="text-muted mb-1" style="font-size: 0.65rem;">Butuh bantuan tentang pesanan ini?</p>
+                        @php
+                            // Ambil nomor WA toko dari setting atau gunakan default (Pastikan format 62)
+                            $waToko = '6281234567890'; 
+                            $textWa = urlencode("Halo Admin Bakery Bu Ani, saya ingin bertanya tentang pesanan saya dengan nomor Invoice #" . $pesanan->kode_pesanan);
+                        @endphp
+                        <a href="https://wa.me/{{ $waToko }}?text={{ $textWa }}" target="_blank" class="text-success fw-bold text-decoration-none" style="font-size: 0.75rem;">
                             <i class="bi bi-whatsapp me-1"></i> Hubungi Admin
                         </a>
                     </div>

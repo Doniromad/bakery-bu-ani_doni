@@ -61,6 +61,7 @@
                 <div class="card-body p-4">
                     <form action="{{ route('pelanggan.checkout.store') }}" method="POST">
                         @csrf
+                        
                         {{-- Alamat --}}
                         <div class="mb-4">
                             <label class="form-label small fw-bold text-muted text-uppercase">Alamat Lengkap Pengiriman</label>
@@ -68,18 +69,18 @@
                                       placeholder="Contoh: Jl. Slamet Riyadi No. 123, Solo" style="border-radius: 12px;">{{ auth()->user()->alamat }}</textarea>
                         </div>
 
-                        {{-- Metode Bayar --}}
+                        {{-- Metode Bayar (Hidden input karena hanya ada 1 metode) --}}
+                        <input type="hidden" name="metode_bayar" value="transfer">
                         <div class="mb-4">
                             <label class="form-label small fw-bold text-muted text-uppercase">Metode Pembayaran</label>
-                            <select name="metode_bayar" id="payment-select" class="form-select border-0 bg-light p-3" 
-                                    style="border-radius: 12px; cursor: pointer;">
-                                <option value="transfer">Transfer Bank (Verifikasi Manual)</option>
-                                <option value="cod">COD (Bayar di Tempat)</option>
-                            </select>
+                            <div class="p-3 bg-light d-flex align-items-center justify-content-between" style="border-radius: 12px;">
+                                <span class="fw-bold text-dark small">Transfer Bank (Verifikasi Manual)</span>
+                                <i class="bi bi-patch-check-fill text-primary"></i>
+                            </div>
                         </div>
 
-                        {{-- INFO BANK (Dinamis dari Tabel setting_banks) --}}
-                        <div id="bank-info-box" class="p-3 rounded-4 mb-4" style="background-color: #fdf2e9; border: 1px dashed #8B4513;">
+                        {{-- INFO BANK (Selalu Tampil) --}}
+                        <div class="p-3 rounded-4 mb-4" style="background-color: #fdf2e9; border: 1px dashed #8B4513;">
                             <h6 class="fw-bold small mb-3 text-uppercase" style="color: #8B4513; letter-spacing: 1px;">
                                 <i class="bi bi-bank me-2"></i>Rekening Tujuan:
                             </h6>
@@ -98,7 +99,7 @@
 
                             <div class="mt-2 text-center">
                                 <small class="text-muted" style="font-size: 0.7rem;">
-                                    *Silahkan transfer sesuai total, lalu upload bukti di menu <strong>Riwayat Pesanan</strong>.
+                                    *Silahkan transfer sesuai total, lalu upload bukti di menu <strong>Riwayat Pesanan</strong> setelah membuat pesanan.
                                 </small>
                             </div>
                         </div>
@@ -114,25 +115,8 @@
     </div>
 </div>
 
-{{-- SCRIPT INTERAKTIF --}}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const paymentSelect = document.getElementById('payment-select');
-        const bankInfoBox = document.getElementById('bank-info-box');
-
-        // Fungsi Tampil/Sembunyi Box Bank
-        paymentSelect.addEventListener('change', function() {
-            if (this.value === 'transfer') {
-                bankInfoBox.style.display = 'block';
-            } else {
-                bankInfoBox.style.display = 'none';
-            }
-        });
-    });
-</script>
-
 <style>
-    .form-control:focus, .form-select:focus {
+    .form-control:focus {
         background-color: #fff !important;
         box-shadow: 0 0 0 0.25rem rgba(74, 144, 226, 0.15);
         border: 1px solid var(--primary-blue) !important;

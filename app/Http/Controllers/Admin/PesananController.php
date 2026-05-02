@@ -38,15 +38,32 @@ class PesananController extends Controller
             'status' => 'required|in:pending,diproses,dikirim,selesai,dibatalkan'
         ]);
 
-        // LOGIKA TAMBAHAN: Jika status berubah jadi 'selesai', update kolom 'terjual' di tabel produk
+        // ======================================================
+        // LOGIKA PENJUALAN PRODUK YANG DISEMPURNAKAN
+        // ======================================================
+        
+        // 1. Jika pesanan BARU SAJA ditandai 'selesai' -> TAMBAH TERJUAL
         if ($request->status == 'selesai' && $pesanan->status !== 'selesai') {
             foreach ($pesanan->detailPesanan as $detail) {
                 if ($detail->produk) {
-                    // Menambah jumlah terjual berdasarkan kuantitas pesanan
                     $detail->produk->increment('terjual', $detail->jumlah);
                 }
             }
         }
+        
+        // 2. Jika pesanan TADINYA 'selesai' tapi sekarang diubah ke status lain 
+        // (misal admin salah klik dan mengubahnya jadi batal/pending) -> KURANGI KEMBALI TERJUAL
+        elseif ($pesanan->status == 'selesai' && $request->status !== 'selesai') {
+            foreach ($pesanan->detailPesanan as $detail) {
+                if ($detail->produk) {
+                    // Pastikan nilai 'terjual' tidak minus
+                    $sisaTerjual = max(0, $detail->produk->terjual - $detail->jumlah);
+                    $detail->produk->update(['terjual' => $sisaTerjual]);
+                }
+            }
+        }
+
+        // ======================================================
 
         $pesanan->update(['status' => $request->status]);
 
