@@ -3,9 +3,9 @@
 @section('title', 'Katalog Produk - Bakery Bu Ani')
 
 @section('content')
-<div class="container py-3 py-md-4">
-    {{-- 1. BREADCRUMB (Konteks Navigasi) --}}
-    <nav aria-label="breadcrumb" class="mb-3 mb-md-4 d-none d-md-block">
+<div class="container py-3 py-md-5">
+    {{-- 1. BREADCRUMB (Hanya Desktop) --}}
+    <nav aria-label="breadcrumb" class="mb-3 mb-md-4 d-none d-lg-block">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none text-muted">Beranda</a></li>
             <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Produk</li>
@@ -13,7 +13,7 @@
     </nav>
 
     <div class="row g-3 g-md-4">
-        {{-- 2. SIDEBAR FILTER (Tampil hanya di Desktop) --}}
+        {{-- 2. SIDEBAR FILTER (Desktop Saja) --}}
         <aside class="col-lg-3 d-none d-lg-block">
             <div class="sticky-top" style="top: 110px; z-index: 10;">
                 <div class="filter-card shadow-sm border-0 rounded-4 p-4 bg-white">
@@ -51,78 +51,72 @@
             </div>
         </aside>
 
-        {{-- 3. MAIN CONTENT --}}
+        {{-- 3. MAIN CONTENT AREA --}}
         <div class="col-lg-9">
             
-            {{-- Toolbar Atas (Diperbaiki: Tidak Melar di Desktop) --}}
-            <div class="toolbar-premium mb-3 mb-md-4 bg-white p-3 rounded-4 shadow-sm">
-                <div class="row align-items-center">
-                    {{-- Judul & Info --}}
-                    <div class="col-12 col-sm-6 text-center text-sm-start mb-3 mb-sm-0">
-                        <h5 class="fw-bold m-0 text-dark fs-6 fs-sm-5">
-                            {{ isset($kategori) ? $kategori->nama : 'Semua Koleksi' }}
-                        </h5>
-                        <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Menampilkan {{ $produks->total() }} varian roti</small>
-                    </div>
+            {{-- Toolbar Atas (Kategori & Sortir) --}}
+            <div class="toolbar-premium mb-3 mb-md-4 bg-white p-2 p-md-3 rounded-4 shadow-sm border border-light">
+                <div class="d-flex align-items-center justify-content-between gap-2">
                     
-                    {{-- Filter & Sort (Dikanankan di Desktop) --}}
-                    <div class="col-12 col-sm-6">
-                        <div class="d-flex justify-content-center justify-content-sm-end gap-2">
-                            {{-- Tombol Filter (Hanya muncul di Mobile) --}}
-                            <button class="btn btn-soft-primary d-lg-none rounded-pill px-3 fw-bold flex-grow-1 flex-sm-grow-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilter" style="font-size: 0.8rem;">
-                                <i class="bi bi-funnel me-1"></i> FILTER
-                            </button>
-                            
-                            {{-- PREMIUM CUSTOM DROPDOWN SORTING --}}
-                            <form action="{{ url()->current() }}" method="GET" id="form-sorting" class="m-0 flex-grow-1 flex-sm-grow-0">
-                                @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
-                                <input type="hidden" name="sort" id="sort-value" value="{{ request('sort', 'terbaru') }}">
-
-                                <div class="dropdown custom-dropdown-premium w-100">
-                                    <button class="btn dropdown-toggle shadow-sm w-100 text-start text-sm-center dropdown-btn-adaptive" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-sort-down-alt me-1 text-primary"></i>
-                                        <span id="selected-sort-text">
-                                            @if(request('sort') == 'termurah') Termurah 
-                                            @elseif(request('sort') == 'termahal') Termahal 
-                                            @else Terbaru @endif
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2 w-100 w-sm-auto">
-                                        <li>
-                                            <a class="dropdown-item {{ request('sort') == 'terbaru' || !request('sort') ? 'active' : '' }}" 
-                                               href="javascript:void(0)" onclick="submitSort('terbaru')">
-                                               <i class="bi bi-clock-history me-2"></i> Terbaru
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item {{ request('sort') == 'termurah' ? 'active' : '' }}" 
-                                               href="javascript:void(0)" onclick="submitSort('termurah')">
-                                               <i class="bi bi-graph-down me-2"></i> Harga Terendah
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item {{ request('sort') == 'termahal' ? 'active' : '' }}" 
-                                               href="javascript:void(0)" onclick="submitSort('termahal')">
-                                               <i class="bi bi-graph-up me-2"></i> Harga Tertinggi
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </form>
-                        </div>
+                    {{-- Judul Kategori (Sisi Kiri) --}}
+                    <div class="flex-grow-1 min-w-0">
+                        <h6 class="fw-bold m-0 text-dark text-truncate">
+                            {{ isset($kategori) ? $kategori->nama : 'Semua' }}
+                        </h6>
                     </div>
+
+                    {{-- Area Dropdown (Sisi Kanan) --}}
+                    <div class="d-flex gap-2 align-items-center flex-shrink-0">
+                        
+                        {{-- DROPDOWN KATEGORI (HANYA MOBILE) --}}
+                        <div class="dropdown custom-dropdown-premium d-lg-none">
+                            <button class="btn-pill-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-grid-fill text-primary"></i>
+                                <span>Kategori</span>
+                            </button>
+                            <ul class="dropdown-menu border-0 shadow-lg mt-2 dropdown-menu-end">
+                                <li><a class="dropdown-item {{ !isset($kategori) ? 'active' : '' }}" href="{{ route('pelanggan.produk.index') }}">Semua Produk</a></li>
+                                @foreach($global_kategoris as $cat)
+                                    <li><a class="dropdown-item {{ isset($kategori) && $kategori->id == $cat->id ? 'active' : '' }}" href="{{ route('pelanggan.kategori', $cat->slug) }}">{{ $cat->nama }}</a></li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        {{-- DROPDOWN SORTING (MOBILE & DESKTOP) --}}
+                        <form action="{{ url()->current() }}" method="GET" id="form-sorting" class="m-0">
+                            @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
+                            <input type="hidden" name="sort" id="sort-value" value="{{ request('sort', 'terbaru') }}">
+
+                            <div class="dropdown custom-dropdown-premium">
+                                <button class="btn-pill-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-sort-down-alt text-primary"></i>
+                                    <span>
+                                        @if(request('sort') == 'termurah') Termurah
+                                        @elseif(request('sort') == 'termahal') Termahal
+                                        @else Terbaru @endif
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2">
+                                    <li><a class="dropdown-item {{ request('sort') == 'terbaru' || !request('sort') ? 'active' : '' }}" href="javascript:void(0)" onclick="submitSort('terbaru')">Terbaru</a></li>
+                                    <li><a class="dropdown-item {{ request('sort') == 'termurah' ? 'active' : '' }}" href="javascript:void(0)" onclick="submitSort('termurah')">Harga Terendah</a></li>
+                                    <li><a class="dropdown-item {{ request('sort') == 'termahal' ? 'active' : '' }}" href="javascript:void(0)" onclick="submitSort('termahal')">Harga Tertinggi</a></li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
             </div>
 
-            {{-- Alert Pencarian --}}
+            {{-- Info Pencarian --}}
             @if(request('search'))
-                <div class="alert alert-white border shadow-sm mb-3 d-flex justify-content-between align-items-center rounded-4 p-2 p-md-3" style="border-left: 5px solid var(--primary-blue) !important;">
+                <div class="alert bg-white border-0 shadow-sm mb-3 d-flex justify-content-between align-items-center rounded-4 p-2 p-md-3" style="border-left: 4px solid var(--primary-blue) !important;">
                     <span class="text-dark small"><i class="bi bi-search text-primary me-2"></i> Hasil: <strong>"{{ request('search') }}"</strong></span>
-                    <a href="{{ route('pelanggan.produk.index') }}" class="btn btn-sm btn-light rounded-pill px-2 px-md-3" style="font-size: 0.7rem;">Hapus</a>
+                    <a href="{{ route('pelanggan.produk.index') }}" class="btn btn-sm btn-light rounded-pill px-3" style="font-size: 0.7rem;">Reset</a>
                 </div>
             @endif
 
-            {{-- Grid Produk (Mobile = 2 Kolom, Desktop = 4 Kolom) --}}
+            {{-- Grid Produk --}}
             <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-2 g-md-4">
                 @forelse($produks as $produk)
                 <div class="col">
@@ -134,7 +128,7 @@
                                 @else
                                     <div class="placeholder-img"><i class="bi bi-image"></i></div>
                                 @endif
-                                <span class="badge-type text-truncate" style="max-width: 80%;">{{ $produk->kategori->nama ?? 'Roti' }}</span>
+                                <span class="badge-type text-truncate">{{ $produk->kategori->nama ?? 'Roti' }}</span>
                             </div>
                             <div class="card-body p-2 p-md-3 d-flex flex-column">
                                 <h6 class="product-name mb-1">{{ $produk->nama_produk }}</h6>
@@ -156,7 +150,6 @@
                     <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm mx-auto" style="max-width: 500px;">
                         <i class="bi bi-emoji-frown fs-1 d-block mb-3 opacity-25"></i>
                         <h6 class="fw-bold text-dark">Maaf, Roti Tidak Ditemukan</h6>
-                        <p class="small mb-0">Coba kata kunci lain atau pilih kategori berbeda.</p>
                     </div>
                 </div>
                 @endforelse
@@ -170,104 +163,95 @@
     </div>
 </div>
 
-{{-- OFFCANVAS FILTER (KHUSUS MOBILE) --}}
-<div class="offcanvas offcanvas-start rounded-end-4" tabindex="-1" id="offcanvasFilter">
-    <div class="offcanvas-header border-bottom">
-        <h6 class="offcanvas-title fw-bold"><i class="bi bi-funnel me-2"></i> Filter Kategori</h6>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body">
-        <div class="list-group list-group-flush">
-            <a href="{{ route('pelanggan.produk.index') }}" class="list-group-item list-group-item-action border-0 px-2 py-3 {{ !isset($kategori) ? 'text-primary fw-bold bg-light rounded-3' : '' }}">Semua Produk</a>
-            @foreach($global_kategoris as $cat)
-            <a href="{{ route('pelanggan.kategori', $cat->slug) }}" class="list-group-item list-group-item-action border-0 px-2 py-3 {{ isset($kategori) && $kategori->id == $cat->id ? 'text-primary fw-bold bg-light rounded-3' : '' }}">{{ $cat->nama }}</a>
-            @endforeach
-        </div>
-    </div>
-</div>
-
 <style>
     :root {
         --primary-blue: #4A90E2;
-        --dark-blue: #357ABD;
         --soft-blue: #F0F7FF;
         --slate-dark: #1E293B;
+        --text-slate: #64748b;
     }
 
     body { background-color: #F8FAFC; overflow-x: hidden; }
 
-    /* SIDEBAR STYLING */
-    .filter-card { background: white; border: 1px solid #fff; }
-    .cat-link { display: block; padding: 12px 0; color: #64748B; text-decoration: none; font-size: 0.9rem; transition: 0.3s; border-bottom: 1px solid #f8fafc; }
-    .cat-link:hover, .cat-link.active { color: var(--primary-blue); padding-left: 8px; font-weight: 700; }
+    /* SIDEBAR */
+    .filter-card { background: white; border: 1px solid #eee; }
+    .cat-link { display: block; padding: 10px 15px; color: #64748B; text-decoration: none; font-size: 0.9rem; transition: 0.3s; border-radius: 10px; margin-bottom: 5px; }
+    .cat-link:hover, .cat-link.active { background: var(--soft-blue); color: var(--primary-blue); font-weight: 700; }
     
     .latest-item { display: flex; gap: 12px; margin-bottom: 15px; }
     .latest-item img { width: 45px; height: 45px; object-fit: cover; }
-    .latest-info .name { font-size: 0.8rem; color: var(--slate-dark); font-weight: 600; }
-    .latest-info .price { font-size: 0.75rem; color: var(--primary-blue); font-weight: 700; }
 
-    /* CUSTOM DROPDOWN PREMIUM */
-    .custom-dropdown-premium .btn { 
-        background: white; 
-        border: 1px solid #e2e8f0; 
-        border-radius: 50px; 
-        padding: 8px 15px; 
-        color: var(--slate-dark); 
-        transition: 0.3s; 
-        white-space: nowrap; 
+    /* =============================================
+       PILL DROPDOWN BUTTON — Mobile & Desktop
+    ============================================= */
+    .btn-pill-dropdown {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;        /* pill shape */
+        padding: 7px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #1e293b;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+        line-height: 1;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
-    .custom-dropdown-premium .btn:hover { border-color: var(--primary-blue); background: var(--soft-blue); }
-    .custom-dropdown-premium .dropdown-menu { border-radius: 12px; padding: 8px; min-width: 180px; }
-    .custom-dropdown-premium .dropdown-item { border-radius: 8px; padding: 8px 15px; font-size: 0.8rem; font-weight: 600; }
+    .btn-pill-dropdown:hover,
+    .btn-pill-dropdown:focus {
+        border-color: var(--primary-blue);
+        background: var(--soft-blue);
+        outline: none;
+    }
+    .btn-pill-dropdown i {
+        font-size: 13px;
+    }
+    /* Sembunyikan panah default Bootstrap */
+    .btn-pill-dropdown::after { display: none !important; }
+
+    /* DROPDOWN MENU */
+    .custom-dropdown-premium .dropdown-menu {
+        border-radius: 12px;
+        padding: 6px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+        z-index: 1050;
+        min-width: 160px;
+    }
+    .custom-dropdown-premium .dropdown-item {
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-slate);
+        margin-bottom: 2px;
+    }
     .custom-dropdown-premium .dropdown-item:hover { background-color: var(--soft-blue); color: var(--primary-blue); }
     .custom-dropdown-premium .dropdown-item.active { background-color: var(--primary-blue); color: white; }
 
-    /* Fix Dropdown Lebar di Desktop */
-    .dropdown-btn-adaptive { font-size: 0.85rem; min-width: 150px; }
-    @media (min-width: 576px) {
-        .dropdown-btn-adaptive { width: auto !important; }
-    }
-
-    /* PRODUCT CARD MODERN */
+    /* PRODUCT CARD */
     .product-card-modern { background: white; transition: 0.3s ease; border-radius: 16px !important; border: 1px solid rgba(0,0,0,0.05); }
-    .product-card-modern:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(74, 144, 226, 0.08) !important; }
-
+    .product-card-modern:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important; }
     .image-box { position: relative; width: 100%; padding-top: 100%; background: #f8fafc; overflow: hidden; border-radius: 16px 16px 0 0; }
-    .image-box img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-    .product-card-modern:hover .image-box img { transform: scale(1.08); }
-    
-    .badge-type { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.95); color: var(--primary-blue); padding: 4px 10px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .image-box img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+    .badge-type { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.95); color: var(--primary-blue); padding: 4px 10px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 5; }
 
     .product-name { color: var(--slate-dark); font-weight: 700; font-size: 0.85rem; line-height: 1.3; height: 2.6em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     .product-price { color: var(--primary-blue); font-weight: 800; font-size: 1rem; }
-
     .btn-primary-soft { background-color: var(--soft-blue); color: var(--primary-blue); border: none; font-weight: 800; font-size: 0.7rem; transition: 0.3s; }
-    .btn-primary-soft:hover { background-color: var(--primary-blue); color: white; }
 
-    /* === RESPONSIVE MOBILE ADJUSTMENTS === */
     @media (max-width: 768px) {
         .container { padding-top: 1rem !important; }
-        
-        /* Flex Toolbars - Filter & Sort bersampingan */
-        .toolbar-premium { padding: 0.8rem !important; }
-        .btn-soft-primary { background-color: var(--soft-blue); color: var(--primary-blue); border: 1px solid #e0e9ff; }
-        
-        /* Pengecilan Jarak (Gutter) */
-        .g-2 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
-        
-        /* Modifikasi Card & Font Mobile */
         .product-card-modern { border-radius: 12px !important; }
-        .image-box { border-radius: 12px 12px 0 0; }
-        .badge-type { font-size: 0.5rem; padding: 3px 8px; top: 6px; right: 6px; }
-        
-        .product-name { font-size: 0.75rem; margin-bottom: 0.2rem !important; }
+        .product-name { font-size: 0.75rem; }
         .product-price { font-size: 0.85rem; }
-        
         .btn-sm-mobile { font-size: 0.65rem; padding: 0.3rem !important; }
-        
-        /* Pagination Mobile */
-        .pagination-premium .pagination { flex-wrap: wrap; justify-content: center; gap: 4px; }
-        .pagination-premium .page-link { font-size: 0.8rem; padding: 0.3rem 0.6rem; border-radius: 6px !important; }
+        /* Pastikan pill tidak terlalu besar di HP kecil */
+        .btn-pill-dropdown { padding: 7px 12px; font-size: 11px; }
     }
 </style>
 

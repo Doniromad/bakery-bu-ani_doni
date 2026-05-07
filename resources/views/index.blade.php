@@ -84,7 +84,7 @@
 
     <div class="text-center mt-4 d-md-none">
         <a href="{{ route('pelanggan.produk.index') }}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold shadow-sm" style="font-size: 0.8rem;">
-            LIHAT SEMUA KAMI <i class="bi bi-arrow-right ms-1"></i>
+            LIHAT SEMUA 
         </a>
     </div>
 </section>
