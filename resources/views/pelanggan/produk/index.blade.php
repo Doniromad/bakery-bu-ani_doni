@@ -39,9 +39,12 @@
                     <div class="latest-products">
                         @foreach($produks->take(3) as $tp)
                         <a href="{{ route('pelanggan.produk.show', $tp->id) }}" class="latest-item text-decoration-none">
-                            <img src="{{ asset('images/produk/' . $tp->gambar) }}" class="rounded-3" alt="Roti">
+                            {{-- Tambahkan wrapper gambar agar ukuran tetap konsisten --}}
+                            <div class="latest-img-container">
+                                <img src="{{ asset('images/produk/' . $tp->gambar) }}" class="rounded-3" alt="Roti">
+                            </div>
                             <div class="latest-info">
-                                <span class="name text-truncate d-block">{{ $tp->nama_produk }}</span>
+                                <span class="name">{{ $tp->nama_produk }}</span>
                                 <span class="price">Rp{{ number_format($tp->harga, 0, ',', '.') }}</span>
                             </div>
                         </a>
@@ -53,24 +56,19 @@
 
         {{-- 3. MAIN CONTENT AREA --}}
         <div class="col-lg-9">
-            
             {{-- Toolbar Atas (Kategori & Sortir) --}}
             <div class="toolbar-premium mb-3 mb-md-4 bg-white p-2 p-md-3 rounded-4 shadow-sm border border-light">
                 <div class="d-flex align-items-center justify-content-between gap-2">
-                    
-                    {{-- Judul Kategori (Sisi Kiri) --}}
                     <div class="flex-grow-1 min-w-0">
                         <h6 class="fw-bold m-0 text-dark text-truncate">
                             {{ isset($kategori) ? $kategori->nama : 'Semua' }}
                         </h6>
                     </div>
 
-                    {{-- Area Dropdown (Sisi Kanan) --}}
                     <div class="d-flex gap-2 align-items-center flex-shrink-0">
-                        
                         {{-- DROPDOWN KATEGORI (HANYA MOBILE) --}}
                         <div class="dropdown custom-dropdown-premium d-lg-none">
-                            <button class="btn-pill-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn-pill-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-grid-fill text-primary"></i>
                                 <span>Kategori</span>
                             </button>
@@ -82,13 +80,13 @@
                             </ul>
                         </div>
 
-                        {{-- DROPDOWN SORTING (MOBILE & DESKTOP) --}}
+                        {{-- DROPDOWN SORTING --}}
                         <form action="{{ url()->current() }}" method="GET" id="form-sorting" class="m-0">
                             @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
                             <input type="hidden" name="sort" id="sort-value" value="{{ request('sort', 'terbaru') }}">
 
                             <div class="dropdown custom-dropdown-premium">
-                                <button class="btn-pill-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn-pill-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     <i class="bi bi-sort-down-alt text-primary"></i>
                                     <span>
                                         @if(request('sort') == 'termurah') Termurah
@@ -104,17 +102,8 @@
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
-
-            {{-- Info Pencarian --}}
-            @if(request('search'))
-                <div class="alert bg-white border-0 shadow-sm mb-3 d-flex justify-content-between align-items-center rounded-4 p-2 p-md-3" style="border-left: 4px solid var(--primary-blue) !important;">
-                    <span class="text-dark small"><i class="bi bi-search text-primary me-2"></i> Hasil: <strong>"{{ request('search') }}"</strong></span>
-                    <a href="{{ route('pelanggan.produk.index') }}" class="btn btn-sm btn-light rounded-pill px-3" style="font-size: 0.7rem;">Reset</a>
-                </div>
-            @endif
 
             {{-- Grid Produk --}}
             <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-2 g-md-4">
@@ -123,11 +112,7 @@
                     <div class="card h-100 product-card-modern border-0 shadow-sm overflow-hidden">
                         <a href="{{ route('pelanggan.produk.show', $produk->id) }}" class="text-decoration-none">
                             <div class="image-box">
-                                @if($produk->gambar)
-                                    <img src="{{ asset('images/produk/' . $produk->gambar) }}" class="img-fluid" alt="{{ $produk->nama_produk }}">
-                                @else
-                                    <div class="placeholder-img"><i class="bi bi-image"></i></div>
-                                @endif
+                                <img src="{{ asset('images/produk/' . $produk->gambar) }}" class="img-fluid" alt="{{ $produk->nama_produk }}">
                                 <span class="badge-type text-truncate">{{ $produk->kategori->nama ?? 'Roti' }}</span>
                             </div>
                             <div class="card-body p-2 p-md-3 d-flex flex-column">
@@ -139,9 +124,7 @@
                             </div>
                         </a>
                         <div class="px-2 px-md-3 pb-2 pb-md-3">
-                            <a href="{{ route('pelanggan.produk.show', $produk->id) }}" class="btn btn-primary-soft w-100 rounded-pill py-1 py-md-2 btn-sm-mobile">
-                                DETAIL
-                            </a>
+                            <a href="{{ route('pelanggan.produk.show', $produk->id) }}" class="btn btn-primary-soft w-100 rounded-pill py-1 py-md-2 btn-sm-mobile">DETAIL</a>
                         </div>
                     </div>
                 </div>
@@ -173,67 +156,51 @@
 
     body { background-color: #F8FAFC; overflow-x: hidden; }
 
-    /* SIDEBAR */
+    /* === PERBAIKAN SIDEBAR (TULISAN KELUAR CARD) === */
+    .latest-item { 
+        display: flex; 
+        gap: 12px; 
+        margin-bottom: 15px; 
+        align-items: center; 
+        overflow: hidden; 
+    }
+    .latest-img-container { 
+        width: 45px; 
+        height: 45px; 
+        flex-shrink: 0; /* Gambar tidak boleh mengecil */
+    }
+    .latest-img-container img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .latest-info { 
+        flex-grow: 1; 
+        min-width: 0; /* KUNCI: Supaya flex item bisa mengecil dan memicu truncation */
+    }
+    .latest-info .name { 
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--slate-dark);
+        /* Potong teks jika kepanjangan */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .latest-info .price { font-size: 0.75rem; color: var(--primary-blue); font-weight: 600; }
+
+    /* CSS LAINNYA */
     .filter-card { background: white; border: 1px solid #eee; }
     .cat-link { display: block; padding: 10px 15px; color: #64748B; text-decoration: none; font-size: 0.9rem; transition: 0.3s; border-radius: 10px; margin-bottom: 5px; }
     .cat-link:hover, .cat-link.active { background: var(--soft-blue); color: var(--primary-blue); font-weight: 700; }
     
-    .latest-item { display: flex; gap: 12px; margin-bottom: 15px; }
-    .latest-item img { width: 45px; height: 45px; object-fit: cover; }
-
-    /* =============================================
-       PILL DROPDOWN BUTTON — Mobile & Desktop
-    ============================================= */
-    .btn-pill-dropdown {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 999px;        /* pill shape */
-        padding: 7px 14px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #1e293b;
-        white-space: nowrap;
-        cursor: pointer;
-        transition: border-color 0.2s, background 0.2s;
-        line-height: 1;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-    .btn-pill-dropdown:hover,
-    .btn-pill-dropdown:focus {
-        border-color: var(--primary-blue);
-        background: var(--soft-blue);
-        outline: none;
-    }
-    .btn-pill-dropdown i {
-        font-size: 13px;
-    }
-    /* Sembunyikan panah default Bootstrap */
+    .btn-pill-dropdown { display: inline-flex; align-items: center; gap: 6px; background: white; border: 1px solid #e2e8f0; border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 700; color: #1e293b; white-space: nowrap; transition: 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .btn-pill-dropdown:hover { border-color: var(--primary-blue); background: var(--soft-blue); }
     .btn-pill-dropdown::after { display: none !important; }
 
-    /* DROPDOWN MENU */
-    .custom-dropdown-premium .dropdown-menu {
-        border-radius: 12px;
-        padding: 6px;
-        border: none;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-        z-index: 1050;
-        min-width: 160px;
-    }
-    .custom-dropdown-premium .dropdown-item {
-        border-radius: 8px;
-        padding: 8px 14px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text-slate);
-        margin-bottom: 2px;
-    }
+    .custom-dropdown-premium .dropdown-menu { border-radius: 12px; padding: 6px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 1050; min-width: 160px; }
+    .custom-dropdown-premium .dropdown-item { border-radius: 8px; padding: 8px 14px; font-size: 0.85rem; font-weight: 600; color: var(--text-slate); }
     .custom-dropdown-premium .dropdown-item:hover { background-color: var(--soft-blue); color: var(--primary-blue); }
     .custom-dropdown-premium .dropdown-item.active { background-color: var(--primary-blue); color: white; }
 
-    /* PRODUCT CARD */
     .product-card-modern { background: white; transition: 0.3s ease; border-radius: 16px !important; border: 1px solid rgba(0,0,0,0.05); }
     .product-card-modern:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important; }
     .image-box { position: relative; width: 100%; padding-top: 100%; background: #f8fafc; overflow: hidden; border-radius: 16px 16px 0 0; }
@@ -250,8 +217,6 @@
         .product-name { font-size: 0.75rem; }
         .product-price { font-size: 0.85rem; }
         .btn-sm-mobile { font-size: 0.65rem; padding: 0.3rem !important; }
-        /* Pastikan pill tidak terlalu besar di HP kecil */
-        .btn-pill-dropdown { padding: 7px 12px; font-size: 11px; }
     }
 </style>
 

@@ -28,16 +28,20 @@ class KategoriController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $request->validate(['nama' => 'required']);
-        
-        $kategori = Kategori::findOrFail($id);
-        $kategori->update([
-            'nama' => $request->nama,
-            'slug' => Str::slug($request->nama)
-        ]);
+{
+    // Validasi: unik di tabel kategoris, kolom nama, tapi abaikan ID ini ($id)
+    $request->validate([
+        'nama' => 'required|unique:kategoris,nama,' . $id,
+    ]);
+    
+    $kategori = Kategori::findOrFail($id);
+    
+    $kategori->update([
+        'nama' => $request->nama,
+        'slug' => \Illuminate\Support\Str::slug($request->nama)
+    ]);
 
-        return redirect()->back()->with('success', 'Kategori berhasil diubah!');
+    return redirect()->back()->with('success', 'Kategori berhasil diubah!');
     }
 
     public function destroy($id)

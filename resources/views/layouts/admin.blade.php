@@ -160,10 +160,11 @@
             </a>
         </div>
 
-        <div class="pt-3 border-top border-secondary">
+        {{-- PERBAIKAN TOMBOL LOGOUT --}}
+        <div class="pt-3 border-top border-white border-opacity-10">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn btn-link nav-link-custom w-100 text-start border-0 bg-transparent text-danger fw-bold">
+                <button type="submit" class="nav-link-custom w-100 text-start border-0 bg-transparent">
                     <i class="bi bi-box-arrow-left me-3"></i> Logout Akun
                 </button>
             </form>
@@ -182,7 +183,7 @@
                         <span class="small">{{ session('success') }}</span>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-alert="alert"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
