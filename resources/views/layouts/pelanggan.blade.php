@@ -276,7 +276,7 @@
                 <ul class="list-unstyled small text-muted">
                     <li class="mb-3 d-flex align-items-start">
                         <i class="bi bi-geo-alt text-primary me-2 mt-1"></i>
-                        <span style="line-height: 1.5;">Jl. Bakery No. 12, Kota Roti, Indonesia</span>
+                        <span style="line-height: 1.5;">Jl. Ngadirejo, Watubonang RT/RW 03/07. 12, Sukoharjo, Indonesia</span>
                     </li>
                     <li class="mb-2 d-flex align-items-center">
                         <i class="bi bi-telephone text-primary me-2"></i>
