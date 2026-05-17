@@ -35,9 +35,8 @@ class AuthenticatedSessionController extends Controller
         }
 
         // 2. Jika Pelanggan, arahkan ke Beranda (/) bukan ke Produk Index
-        // intended('/') akan mengarahkan user ke halaman yang ingin mereka tuju sebelumnya, 
-        // jika tidak ada, maka defaultnya ke Beranda.
-        return redirect()->intended('/');
+        // Jangan gunakan intended() karena bisa salah redirect jika mereka akses "/" saat login
+        return redirect('/');
     }
 
     /**

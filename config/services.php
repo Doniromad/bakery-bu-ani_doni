@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        // URL Redirect dipasang langsung di sini (Hardcode) agar pasti terbaca
+        'redirect' => 'http://127.0.0.1:8000/auth/google/callback',
+    ],
+
 ];

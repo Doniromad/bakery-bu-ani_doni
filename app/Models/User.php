@@ -21,9 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'no_telp', // Sudah benar kamu tambahkan
-        'alamat',  // TAMBAHKAN INI: Sesuai kolom nomor 5 di database kamu
-        'role',    // Sesuai kolom nomor 4 di database kamu
+        'no_telp', 
+        'alamat',  
+        'role',    
+        'google_id', // TAMBAHKAN INI: Agar data Google ID bisa disimpan saat login
     ];
 
     /**

@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Pelanggan;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\GoogleController;
 
-// 1. HALAMAN UTAMA (Landing Page)
+// 1. HALAMAN UTAMA (Landing Page) - Bisa diakses siapa saja, tidak ada redirect ke admin
 Route::get('/', [Pelanggan\ProdukController::class, 'home'])->name('home');
 
 // ===== ADMIN ROUTES =====
@@ -67,5 +68,9 @@ Route::get('/dashboard', function () {
     }
     return redirect()->route('pelanggan.produk.index');
 })->middleware('auth')->name('dashboard');
+
+// ===== GOOGLE OAUTH ROUTES (SUDAH DIPERBAIKI) =====
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
 
 require __DIR__.'/auth.php';
